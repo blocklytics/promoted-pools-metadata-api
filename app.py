@@ -18,10 +18,10 @@ BASES = ['20B2AA', 'F0E68C', 'A52A2A', 'F08080', '4682B4', '9932CC', '2F4F4F', '
 def sponsored_pool(token_id):
     token_id = int(token_id)
     
-    base = BASES[token_id % len(BASES)]
-    image_url = _compose_image(['images/bases/base-%s.png' % base,
-                                'images/blocklytics-cool.png'],
-                               token_id)
+    # base = BASES[token_id % len(BASES)]
+    # image_url = _compose_image(['images/bases/base-%s.png' % base,
+    #                             'images/blocklytics-cool.png'],
+    #                            token_id)
 
     # attributes = []
     # _add_attribute(attributes, 'base', BASES, token_id)
@@ -34,13 +34,13 @@ def sponsored_pool(token_id):
     # _add_attribute(attributes, 'stamina_increase', PERCENT_BOOST_ATTRIBUTES, token_id, display_type="boost_percentage")
     # _add_attribute(attributes, 'generation', NUMBER_ATTRIBUTES, token_id, display_type="number")
 
-
-    return jsonify({
-        'name': "Pools.fyi Sponsored Pool",
-        'description': "Sponsored listing on Pools.fyi.",
-        'image': image_url,
-        'external_url': 'https://pools.fyi'
-    })
+    return jsonify({'name': "Pools.fyi Sponsored Pool", 'token' : token_id })
+    # return jsonify({
+    #     'name': "Pools.fyi Sponsored Pool",
+    #     'description': "Sponsored listing on Pools.fyi.",
+    #     'image': image_url,
+    #     'external_url': 'https://pools.fyi'
+    # })
 
 def _add_attribute(existing, attribute_name, options, token_id, display_type=None):
     trait = {
