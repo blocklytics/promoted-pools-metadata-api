@@ -22,7 +22,7 @@ def sponsored_pool(token_id):
     # image_url = _compose_image(['images/bases/base-{}.png'.format(base),
     #                             'images/blocklytics-cool.png'],
     #                            token_id)
-    image_url = "https://storage.googleapis.com/sponsored-pools/meta/1/blocklytics-cool.png"
+    image_url = "https://storage.googleapis.com/sponsored-pools/meta/{}/blocklytics-cool.png".format(token_id)
     # attributes = []
     # _add_attribute(attributes, 'base', BASES, token_id)
     # _add_attribute(attributes, 'eyes', EYES, token_id)
@@ -40,6 +40,12 @@ def sponsored_pool(token_id):
         'image': image_url,
         'external_url': 'https://pools.fyi'
     })
+
+@app.route('/create/<token_id>')
+def create(token_id):
+    return _compose_image(['images/bases/base-{}.png'.format(base),
+                    'images/blocklytics-cool.png'],
+                    token_id)
 
 def _add_attribute(existing, attribute_name, options, token_id, display_type=None):
     trait = {
@@ -64,7 +70,7 @@ def _compose_image(image_files, token_id, path="meta"):
     output_path = "images/output/{}.png".format(token_id)
     composite.save(output_path)
 
-    blob = _get_bucket().blob("{}/{}/blocky.png".format(path, token_id))
+    blob = _get_bucket().blob("{}/{}/blocklytics-cool.png".format(path, token_id))
     blob.upload_from_filename(filename=output_path)
     return blob.public_url
 
