@@ -15,11 +15,9 @@ BASES = ['20B2AA', 'F0E68C', 'A52A2A', 'F08080', '4682B4', '9932CC', '2F4F4F', '
 
 
 @app.route('/meta/<token_id>')
-def sponsored_pool(token_id):
+def meta(token_id):
     token_id = int(token_id)
-    
-    base = BASES[token_id % len(BASES)]
-    # image_url = _compose_image(['images/bases/base-{}.png'.format(base),
+        # image_url = _compose_image(['images/bases/base-{}.png'.format(base),
     #                             'images/blocklytics-cool.png'],
     #                            token_id)
     image_url = "https://storage.googleapis.com/sponsored-pools/meta/{}/blocklytics-cool.png".format(token_id)
@@ -43,6 +41,9 @@ def sponsored_pool(token_id):
 
 @app.route('/create/<token_id>')
 def create(token_id):
+    token_id = int(token_id)
+    
+    base = BASES[token_id % len(BASES)]
     return _compose_image(['images/bases/base-{}.png'.format(base),
                     'images/blocklytics-cool.png'],
                     token_id)
