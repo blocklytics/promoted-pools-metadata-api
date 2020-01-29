@@ -19,10 +19,10 @@ def sponsored_pool(token_id):
     token_id = int(token_id)
     
     base = BASES[token_id % len(BASES)]
-    image_url = _compose_image(['images/bases/base-{}.png'.format(base),
-                                'images/blocklytics-cool.png'],
-                               token_id)
-
+    # image_url = _compose_image(['images/bases/base-{}.png'.format(base),
+    #                             'images/blocklytics-cool.png'],
+    #                            token_id)
+    image_url = "https://storage.googleapis.com/sponsored-pools/meta/1/blocklytics-cool.png"
     # attributes = []
     # _add_attribute(attributes, 'base', BASES, token_id)
     # _add_attribute(attributes, 'eyes', EYES, token_id)
@@ -34,7 +34,6 @@ def sponsored_pool(token_id):
     # _add_attribute(attributes, 'stamina_increase', PERCENT_BOOST_ATTRIBUTES, token_id, display_type="boost_percentage")
     # _add_attribute(attributes, 'generation', NUMBER_ATTRIBUTES, token_id, display_type="number")
 
-    # return jsonify({'name': "Pools.fyi Sponsored Pool", 'token' : token_id })
     return jsonify({
         'name': "Pools.fyi Sponsored Pool",
         'description': "Sponsored listing on Pools.fyi.",
