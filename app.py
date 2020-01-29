@@ -19,7 +19,7 @@ def sponsored_pool(token_id):
     token_id = int(token_id)
     
     base = BASES[token_id % len(BASES)]
-    image_url = _compose_image(['images/bases/base-%s.png' % base,
+    image_url = _compose_image(['images/bases/base-{}.png'.format(base),
                                 'images/blocklytics-cool.png'],
                                token_id)
 
