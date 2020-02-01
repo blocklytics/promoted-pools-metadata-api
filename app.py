@@ -10,7 +10,8 @@ GOOGLE_STORAGE_PROJECT = os.environ['GOOGLE_STORAGE_PROJECT']
 GOOGLE_STORAGE_BUCKET = os.environ['GOOGLE_STORAGE_BUCKET']
 BASE_URL = os.environ['BASE_URL']
 METADATA_PATH = os.environ['METADATA_PATH']
-
+with open('credentials/google-storage-credentials.json', 'w') as f:
+    f.write(os.environ['GOOGLE_CREDENTIALS'])
 
 app = Flask(__name__)
 
@@ -71,6 +72,4 @@ def _get_bucket():
     return client.get_bucket(GOOGLE_STORAGE_BUCKET)
 
 if __name__ == '__main__':
-    with open('credentials/google-storage-credentials.json', 'w') as f:
-        f.write(os.environ['GOOGLE_CREDENTIALS'])
     app.run(debug=True, use_reloader=True)
