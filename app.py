@@ -10,8 +10,7 @@ GOOGLE_STORAGE_PROJECT = os.environ['GOOGLE_STORAGE_PROJECT']
 GOOGLE_STORAGE_BUCKET = os.environ['GOOGLE_STORAGE_BUCKET']
 BASE_URL = os.environ['BASE_URL']
 METADATA_PATH = os.environ['METADATA_PATH']
-with open('credentials/google-storage-credentials.json', 'w') as f:
-    f.write(os.environ['GOOGLE_CREDENTIALS'])
+
 
 app = Flask(__name__)
 
@@ -65,11 +64,13 @@ def _get_metadata(token_id):
     return blob.download_as_string()
 
 def _get_bucket():
-    credentials = service_account.Credentials.from_service_account_file('credentials/google-storage-credentials.json')
+    credentials = service_account.Credentials.from_service_account_file('google-storage-credentials.json')
     if credentials.requires_scopes:
         credentials = credentials.with_scopes(['https://www.googleapis.com/auth/devstorage.read_write'])
     client = storage.Client(project=GOOGLE_STORAGE_PROJECT, credentials=credentials)
     return client.get_bucket(GOOGLE_STORAGE_BUCKET)
 
 if __name__ == '__main__':
+    with open('google-storage-credentials.json', 'w') as f:
+        f.write(os.environ['GOOGLE_CREDENTIALS'])
     app.run(debug=True, use_reloader=True)
