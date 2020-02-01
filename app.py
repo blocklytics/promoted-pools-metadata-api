@@ -64,9 +64,9 @@ def _get_metadata(token_id):
     return blob.download_as_string()
 
 def _get_bucket():
-    with open('credentials/google-storage-credentials.json', 'w') as f:
+    with open('google-storage-credentials.json', 'w') as f:
         f.write(os.environ['GOOGLE_CREDENTIALS'])
-    credentials = service_account.Credentials.from_service_account_file('credentials/google-storage-credentials.json')
+    credentials = service_account.Credentials.from_service_account_file('google-storage-credentials.json')
     if credentials.requires_scopes:
         credentials = credentials.with_scopes(['https://www.googleapis.com/auth/devstorage.read_write'])
     client = storage.Client(project=GOOGLE_STORAGE_PROJECT, credentials=credentials)
