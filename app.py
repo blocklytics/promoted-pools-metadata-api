@@ -19,7 +19,7 @@ BASES = ['20B2AA', 'F0E68C', 'A52A2A', 'F08080', '4682B4', '9932CC', '2F4F4F', '
 def metadata(token_id):
     token_id = int(token_id)
     
-    return "{}{}{}/meta.json".format(BASE_URL, METADATA_PATH, token_id)
+    return _get_metadata(token_id)
 
 @app.route('/create/<token_id>', methods=['GET', 'POST'])
 def create(token_id):
@@ -60,6 +60,10 @@ def _upload_image(image_files, token_id):
     blob = _get_bucket().blob("{}{}/blocklytics-cool.png".format(METADATA_PATH, token_id))
     blob.upload_from_filename(filename=output_path)
 
+def _get_metadata(token_id):
+    blob = _get_bucket().blob("{}{}/meta.json".format(METADATA_PATH, token_id))
+    return blob.download_as_string()
+
 
 def _get_bucket():
     credentials = service_account.Credentials.from_service_account_file('credentials/google-storage-credentials.json')
@@ -67,6 +71,8 @@ def _get_bucket():
         credentials = credentials.with_scopes(['https://www.googleapis.com/auth/devstorage.read_write'])
     client = storage.Client(project=GOOGLE_STORAGE_PROJECT, credentials=credentials)
     return client.get_bucket(GOOGLE_STORAGE_BUCKET)
+
+
 
 
 if __name__ == '__main__':
