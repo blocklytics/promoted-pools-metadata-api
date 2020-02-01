@@ -11,6 +11,7 @@ GOOGLE_STORAGE_BUCKET = os.environ['GOOGLE_STORAGE_BUCKET']
 BASE_URL = os.environ['BASE_URL']
 METADATA_PATH = os.environ['METADATA_PATH']
 
+
 app = Flask(__name__)
 
 BASES = ['20B2AA', 'F0E68C', 'A52A2A', 'F08080', '4682B4', '9932CC', '2F4F4F', 'FFDAB9', '00FFFF', '6B8E23', 'FF4500', 'FFD700', '87CEEB', '0000CD', 'F0FFFF', 'FFE4B5', '8B008B', 'DC143C', '7FFF00', 'CD853F']
@@ -18,13 +19,11 @@ BASES = ['20B2AA', 'F0E68C', 'A52A2A', 'F08080', '4682B4', '9932CC', '2F4F4F', '
 @app.route('/<token_id>')
 def metadata(token_id):
     token_id = int(token_id)
-    
     return _get_metadata(token_id)
 
 @app.route('/create/<token_id>', methods=['GET', 'POST'])
 def create(token_id):
     token_id = int(token_id)
-    
     base = BASES[token_id % len(BASES)]
     image_url = "{}{}{}/blocklytics-cool.png".format(BASE_URL, METADATA_PATH, token_id)
     meta = {
@@ -64,7 +63,6 @@ def _get_metadata(token_id):
     blob = _get_bucket().blob("{}{}/meta.json".format(METADATA_PATH, token_id))
     return blob.download_as_string()
 
-
 def _get_bucket():
     credentials = service_account.Credentials.from_service_account_file('credentials/google-storage-credentials.json')
     if credentials.requires_scopes:
@@ -72,8 +70,7 @@ def _get_bucket():
     client = storage.Client(project=GOOGLE_STORAGE_PROJECT, credentials=credentials)
     return client.get_bucket(GOOGLE_STORAGE_BUCKET)
 
-
-
-
 if __name__ == '__main__':
+    with open('credentials/google-storage-credentials.json', 'w') as f:
+        f.write(os.environ['GOOGLE_CREDENTIALS'])
     app.run(debug=True, use_reloader=True)
