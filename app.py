@@ -8,57 +8,43 @@ import mimetypes
 
 GOOGLE_STORAGE_PROJECT = os.environ['GOOGLE_STORAGE_PROJECT']
 GOOGLE_STORAGE_BUCKET = os.environ['GOOGLE_STORAGE_BUCKET']
+BASE_URL = os.environ['BASE_URL']
+METADATA_PATH = os.environ['METADATA_PATH']
 
 app = Flask(__name__)
 
 BASES = ['20B2AA', 'F0E68C', 'A52A2A', 'F08080', '4682B4', '9932CC', '2F4F4F', 'FFDAB9', '00FFFF', '6B8E23', 'FF4500', 'FFD700', '87CEEB', '0000CD', 'F0FFFF', 'FFE4B5', '8B008B', 'DC143C', '7FFF00', 'CD853F']
 
-
-@app.route('/meta/<token_id>')
-def meta(token_id):
+@app.route('/<token_id>')
+def metadata(token_id):
     token_id = int(token_id)
-        # image_url = _compose_image(['images/bases/base-{}.png'.format(base),
-    #                             'images/blocklytics-cool.png'],
-    #                            token_id)
-    image_url = "https://storage.googleapis.com/sponsored-pools/meta/{}/blocklytics-cool.png".format(token_id)
-    # attributes = []
-    # _add_attribute(attributes, 'base', BASES, token_id)
-    # _add_attribute(attributes, 'eyes', EYES, token_id)
-    # _add_attribute(attributes, 'mouth', MOUTH, token_id)
-    # _add_attribute(attributes, 'level', INT_ATTRIBUTES, token_id)
-    # _add_attribute(attributes, 'stamina', FLOAT_ATTRIBUTES, token_id)
-    # _add_attribute(attributes, 'personality', STR_ATTRIBUTES, token_id)
-    # _add_attribute(attributes, 'aqua_power', BOOST_ATTRIBUTES, token_id, display_type="boost_number")
-    # _add_attribute(attributes, 'stamina_increase', PERCENT_BOOST_ATTRIBUTES, token_id, display_type="boost_percentage")
-    # _add_attribute(attributes, 'generation', NUMBER_ATTRIBUTES, token_id, display_type="number")
+    
+    return "{}{}{}/meta.json".format(BASE_URL, METADATA_PATH, token_id)
 
-    return jsonify({
-        'name': "Pools.fyi Sponsored Pool",
-        'description': "Sponsored listing on Pools.fyi.",
-        'image': image_url,
-        'external_url': 'https://pools.fyi'
-    })
-
-@app.route('/create/<token_id>')
+@app.route('/create/<token_id>', methods=['GET', 'POST'])
 def create(token_id):
     token_id = int(token_id)
     
     base = BASES[token_id % len(BASES)]
-    return _compose_image(['images/bases/base-{}.png'.format(base),
+    image_url = "{}{}{}/blocklytics-cool.png".format(BASE_URL, METADATA_PATH, token_id)
+    meta = {
+        'name': "Pools.fyi Promoted Pool",
+        'description': "The owner of this token is granted the right to promote a pool on https://pools.fyi, subject to the following:\nTERMS AND CONDITIONS\n1. Contact hello@blocklytics.org to initiate the redemption process.\n2. Scheduling will be handled on a first-come, first-served basis. Schedule early to avoid disappointment!\n3. The promoted pool will be displayed for a period of time as determined by the individual token's attributes.\n4. Redemption rights for the token expire as determined by the individual token's attributes.\n5. Where feasible, Blocklytics Ltd will enable an \"Add Liquidity\" feature for the promoted pool\n6. Blocklytics Ltd reserves the right to refuse redemption and/or change the promoted pool.\n7. Blocklytics Ltd will endeavour to refund a token redeemer in case redemption is not possible or the promoted pool was not advertised for the full period.",
+        'image': image_url,
+        'external_url': 'https://pools.fyi'
+    }
+    if request.json:
+        meta = request.json
+    _upload_metadata(meta)
+    _upload_image(['images/bases/base-{}.png'.format(base),
                     'images/blocklytics-cool.png'],
                     token_id)
 
-def _add_attribute(existing, attribute_name, options, token_id, display_type=None):
-    trait = {
-        'trait_type': attribute_name,
-        'value': options[token_id % len(options)]
-    }
-    if display_type:
-        trait['display_type'] = display_type
-    existing.append(trait)
+def _upload_metadata(metadata):
+    blob = _get_bucket().blob("{}{}/meta.json".format(METADATA_PATH, token_id))
+    blob.upload_from_string(filename=output_path)
 
-
-def _compose_image(image_files, token_id, path="meta"):
+def _upload_image(image_files, token_id):
     composite = None
     for image_file in image_files:
         foreground = Image.open(image_file).convert("RGBA")
@@ -71,9 +57,8 @@ def _compose_image(image_files, token_id, path="meta"):
     output_path = "images/output/{}.png".format(token_id)
     composite.save(output_path)
 
-    blob = _get_bucket().blob("{}/{}/blocklytics-cool.png".format(path, token_id))
+    blob = _get_bucket().blob("{}{}/blocklytics-cool.png".format(METADATA_PATH, token_id))
     blob.upload_from_filename(filename=output_path)
-    return blob.public_url
 
 
 def _get_bucket():
