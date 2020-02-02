@@ -40,7 +40,7 @@ def create(token_id):
 
 def _upload_metadata(metadata, token_id):
     blob = _get_bucket().blob("{}{}/meta.json".format(METADATA_PATH, token_id))
-    blob.upload_from_string(filename=output_path)
+    blob.upload_from_string(metadata)
 
 def _upload_image(image_files, token_id):
     composite = None
