@@ -17,7 +17,7 @@ BASES = ['F0E68C', '20B2AA', 'A52A2A', 'F08080', '4682B4', '9932CC', '2F4F4F', '
 @app.route('/<token_id>')
 def metadata(token_id):
     token_id = int(token_id)
-    return _get_metadata(token_id)
+    return jsonify(_get_metadata(token_id))
 
 @app.route('/create/<token_id>', methods=['GET', 'POST'])
 def create(token_id):
