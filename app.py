@@ -24,16 +24,16 @@ def create(token_id):
     token_id = int(token_id)
     base = BASES[token_id % len(BASES)]
     image_url = "{}{}{}/blocklytics-cool.png".format(BASE_URL, METADATA_PATH, token_id)
-    meta = {
-        'name': "Pools.fyi Promoted Pool",
-        'description': "The owner of this token is granted the right to promote a pool on https://pools.fyi, subject to the following:\nTERMS AND CONDITIONS\n1. Contact hello@blocklytics.org to initiate the redemption process.\n2. Scheduling will be handled on a first-come, first-served basis. Schedule early to avoid disappointment!\n3. The promoted pool will be displayed for a period of time as determined by the individual token's attributes.\n4. Redemption rights for the token expire as determined by the individual token's attributes.\n5. Where feasible, Blocklytics Ltd will enable an \"Add Liquidity\" feature for the promoted pool\n6. Blocklytics Ltd reserves the right to refuse redemption and/or change the promoted pool.\n7. Blocklytics Ltd will endeavour to refund a token redeemer in case redemption is not possible or the promoted pool was not advertised for the full period.",
-        'image': image_url,
-        'external_url': 'https://pools.fyi'
-    }
-    if request.method == 'POST' and request.json:
+    if request.method == 'POST':
         meta = request.json
-    meta_json = json.dumps(meta)
-    _upload_metadata(meta_json, token_id)
+    else:
+        meta = json.dumps({
+            'name': "Pools.fyi Promoted Pool",
+            'description': "The owner of this token is granted the right to promote a pool on https://pools.fyi, subject to the following:\nTERMS AND CONDITIONS\n1. Contact hello@blocklytics.org to initiate the redemption process.\n2. Scheduling will be handled on a first-come, first-served basis. Schedule early to avoid disappointment!\n3. The promoted pool will be displayed for a period of time as determined by the individual token's attributes.\n4. Redemption rights for the token expire as determined by the individual token's attributes.\n5. Where feasible, Blocklytics Ltd will enable an \"Add Liquidity\" feature for the promoted pool\n6. Blocklytics Ltd reserves the right to refuse redemption and/or change the promoted pool.\n7. Blocklytics Ltd will endeavour to refund a token redeemer in case redemption is not possible or the promoted pool was not advertised for the full period.",
+            'image': image_url,
+            'external_url': 'https://pools.fyi'
+        })
+    _upload_metadata(meta, token_id)
     _upload_image(['images/bases/base-{}.png'.format(base),
                     'images/blocklytics-cool.png'],
                     token_id)
