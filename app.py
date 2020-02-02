@@ -1,5 +1,4 @@
-from flask import Flask
-from flask import jsonify
+from flask import Flask, request, jsonify
 from google.cloud import storage
 from google.oauth2 import service_account
 from PIL import Image
@@ -32,7 +31,7 @@ def create(token_id):
         'image': image_url,
         'external_url': 'https://pools.fyi'
     }
-    if request.json:
+    if request.method == 'POST' and request.json:
         meta = request.json
     _upload_metadata(meta)
     _upload_image(['images/bases/base-{}.png'.format(base),
