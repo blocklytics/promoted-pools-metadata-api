@@ -37,6 +37,8 @@ def create(token_id):
     _upload_image(['images/bases/base-{}.png'.format(base),
                     'images/blocklytics-cool.png'],
                     token_id)
+    resp = jsonify(success=True)
+    return resp
 
 def _upload_metadata(metadata, token_id):
     blob = _get_bucket().blob("{}{}/meta.json".format(METADATA_PATH, token_id))
