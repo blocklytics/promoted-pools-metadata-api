@@ -33,7 +33,8 @@ def create(token_id):
     }
     if request.method == 'POST' and request.json:
         meta = request.json
-    _upload_metadata(meta, token_id)
+    meta_json = jsonify(meta)
+    _upload_metadata(meta_json, token_id)
     _upload_image(['images/bases/base-{}.png'.format(base),
                     'images/blocklytics-cool.png'],
                     token_id)
