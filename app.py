@@ -2,8 +2,7 @@ from flask import Flask, request, jsonify
 from google.cloud import storage
 from google.oauth2 import service_account
 from PIL import Image
-import os
-import mimetypes
+import os, json, mimetypes
 
 GOOGLE_STORAGE_PROJECT = os.environ['GOOGLE_STORAGE_PROJECT']
 GOOGLE_STORAGE_BUCKET = os.environ['GOOGLE_STORAGE_BUCKET']
@@ -33,7 +32,7 @@ def create(token_id):
     }
     if request.method == 'POST' and request.json:
         meta = request.json
-    meta_json = jsonify(meta)
+    meta_json = json.dumps(meta)
     _upload_metadata(meta_json, token_id)
     _upload_image(['images/bases/base-{}.png'.format(base),
                     'images/blocklytics-cool.png'],
