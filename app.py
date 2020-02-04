@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from google.cloud import storage
 from google.oauth2 import service_account
 from PIL import Image
-import os, json, mimetypes
+import os, json, mimetypes, time
 
 GOOGLE_STORAGE_PROJECT = os.environ['GOOGLE_STORAGE_PROJECT']
 GOOGLE_STORAGE_BUCKET = os.environ['GOOGLE_STORAGE_BUCKET']
@@ -17,22 +17,24 @@ BASES = ['F0E68C', '20B2AA', 'A52A2A', 'F08080', '4682B4', '9932CC', '2F4F4F', '
 @app.route('/<token_id>')
 def metadata(token_id):
     token_id = int(token_id)
-    return jsonify(json.loads(_get_metadata(token_id)))
+    current_time = time.time()
+    metadata = json.loads(_get_metadata(token_id))
+    for attribute in metadata['attributes']:
+        if attribute['trait_type'] == 'promotion_ends':
+            token_expiration = attribute['value']
+            if token_expiration < current_time:
+                metadata['attributes'].append({'trait_type': 'has_expired', 'value': 'false'})
+            else:
+                metadata['attributes'].append({'trait_type': 'has_expired', 'value': 'true'})
+            break
+    return jsonify(metadata)
 
-@app.route('/create/<token_id>', methods=['GET', 'POST'])
+@app.route('/create/<token_id>', methods=['POST'])
 def create(token_id):
     token_id = int(token_id)
     base = BASES[token_id % len(BASES)]
     image_url = "{}{}{}/blocklytics-cool.png".format(BASE_URL, METADATA_PATH, token_id)
-    if request.method == 'POST':
-        meta = request.json
-    else:
-        meta = {
-            'name': "Pools.fyi Promoted Pool",
-            'description': "The owner of this token is granted the right to promote a pool on https://pools.fyi, subject to the following:<br>TERMS AND CONDITIONS<br>1. Contact hello@blocklytics.org to initiate the redemption process.<br>2. Scheduling will be handled on a first-come, first-served basis. Schedule early to avoid disappointment!<br>3. The promoted pool will be displayed for a period of time as determined by the individual token's attributes.<br>4. Redemption rights for the token expire as determined by the individual token's attributes.<br>5. Where feasible, Blocklytics Ltd will enable an \"Add Liquidity\" feature for the promoted pool<br>6. Blocklytics Ltd reserves the right to refuse redemption and/or change the promoted pool.<br>7. Blocklytics Ltd will endeavour to refund a token redeemer in case redemption is not possible or the promoted pool was not advertised for the full period.",
-            'image': image_url,
-            'external_url': 'https://pools.fyi'
-        }
+    meta = request.json
     meta_json = json.dumps(meta)
     _upload_metadata(meta_json, token_id)
     _upload_image(['images/bases/base-{}.png'.format(base),
