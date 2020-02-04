@@ -23,9 +23,9 @@ def metadata(token_id):
         if attribute['trait_type'] == 'promotion_ends':
             token_expiration = attribute['value']
             if token_expiration < current_time:
-                metadata['attributes'].append({'trait_type': 'has_expired', 'value': 'false'})
-            else:
                 metadata['attributes'].append({'trait_type': 'has_expired', 'value': 'true'})
+            else:
+                metadata['attributes'].append({'trait_type': 'has_expired', 'value': 'false'})
             break
     return jsonify(metadata)
 
