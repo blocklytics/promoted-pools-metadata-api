@@ -72,7 +72,7 @@ def _upload_image(image_files, token_id, start_time, end_time):
             composite = foreground
     canvas = ImageDraw.Draw(composite)
     font = ImageFont.truetype("fonts/coolvetica-cond.ttf", 76)
-    canvas.text((33,478), "{} - {}".format(start_time, end_time), font=font, fill=(0, 0, 0))
+    canvas.text((35,478), "{} - {}".format(start_time, end_time), font=font, fill=(0, 0, 0))
     output_path = "images/output/{}.png".format(token_id)
     composite.save(output_path)
 
