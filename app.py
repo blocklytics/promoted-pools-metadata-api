@@ -1,8 +1,9 @@
 from flask import Flask, request, jsonify
 from google.cloud import storage
 from google.oauth2 import service_account
-from PIL import Image
+from PIL import Image, ImageFont, ImageDraw
 import os, json, mimetypes, time
+from datetime import datetime
 
 GOOGLE_STORAGE_PROJECT = os.environ['GOOGLE_STORAGE_PROJECT']
 GOOGLE_STORAGE_BUCKET = os.environ['GOOGLE_STORAGE_BUCKET']
@@ -12,7 +13,7 @@ METADATA_PATH = os.environ['METADATA_PATH']
 
 app = Flask(__name__)
 
-BASES = ['F0E68C', '20B2AA', 'A52A2A', 'F08080', '4682B4', '9932CC', '2F4F4F', 'FFDAB9', '00FFFF', '6B8E23', 'FF4500', 'FFD700', '87CEEB', '0000CD', 'F0FFFF', 'FFE4B5', '8B008B', 'DC143C', '7FFF00', 'CD853F']
+BASES = ['F0E68C', '20B2AA', 'A52A2A', 'F08080', '4682B4', '9932CC', '2F4F4F', 'FFDAB9', '00FFFF', '6B8E23', 'FF4500', 'FFD700', '87CEEB', 'F0FFFF', 'FFE4B5', '8B008B', 'DC143C', '7FFF00', 'CD853F']
 
 @app.route('/api/promoted-pools/<token_id>')
 def metadata(token_id):
@@ -31,15 +32,28 @@ def metadata(token_id):
 
 @app.route('/api/promoted-pools/create/<token_id>', methods=['POST'])
 def create(token_id):
+    start_time = ""
+    end_time = ""
     token_id = int(token_id)
     base = BASES[token_id % len(BASES)]
     image_url = "{}{}{}/blocklytics-cool.png".format(BASE_URL, METADATA_PATH, token_id)
     meta = request.json
     meta_json = json.dumps(meta)
     _upload_metadata(meta_json, token_id)
+    for attribute in meta['attributes']:
+        if attribute['trait_type'] == 'promotion_begins':
+            start_dt = datetime.fromtimestamp(attribute['value'])
+            start_time = start_dt.strftime("%Y/%m/%d")
+        if attribute['trait_type'] == 'promotion_ends':
+            end_dt = datetime.fromtimestamp(attribute['value'])
+            end_time = end_dt.strftime("%Y/%m/%d")
+        if start != "" and end_time != "":
+            break
     _upload_image(['images/bases/base-{}.png'.format(base),
                     'images/blocklytics-cool.png'],
-                    token_id)
+                    token_id, 
+                    start_time, 
+                    end_time)
     resp = jsonify(success=True)
     return resp
 
@@ -47,7 +61,7 @@ def _upload_metadata(metadata, token_id):
     blob = _get_bucket().blob("{}{}/meta.json".format(METADATA_PATH, token_id))
     blob.upload_from_string(metadata)
 
-def _upload_image(image_files, token_id):
+def _upload_image(image_files, token_id, start_time, end_time):
     composite = None
     for image_file in image_files:
         foreground = Image.open(image_file).convert("RGBA")
@@ -56,7 +70,9 @@ def _upload_image(image_files, token_id):
             composite = Image.alpha_composite(composite, foreground)
         else:
             composite = foreground
-
+    canvas = ImageDraw.Draw(composite)
+    font = ImageFont.truetype("fonts/coolvetica-cond.ttf", 76)
+    canvas.text((40,478), "{} - {}".format(start_time, end_time), font=font, fill=(0, 0, 0))
     output_path = "images/output/{}.png".format(token_id)
     composite.save(output_path)
 
