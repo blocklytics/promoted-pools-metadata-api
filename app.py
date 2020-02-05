@@ -14,7 +14,7 @@ app = Flask(__name__)
 
 BASES = ['F0E68C', '20B2AA', 'A52A2A', 'F08080', '4682B4', '9932CC', '2F4F4F', 'FFDAB9', '00FFFF', '6B8E23', 'FF4500', 'FFD700', '87CEEB', '0000CD', 'F0FFFF', 'FFE4B5', '8B008B', 'DC143C', '7FFF00', 'CD853F']
 
-@app.route('/promoted-pools/<token_id>')
+@app.route('/api/promoted-pools/<token_id>')
 def metadata(token_id):
     token_id = int(token_id)
     current_time = time.time()
@@ -29,7 +29,7 @@ def metadata(token_id):
             break
     return jsonify(metadata)
 
-@app.route('/promoted-pools/create/<token_id>', methods=['POST'])
+@app.route('/api/promoted-pools/create/<token_id>', methods=['POST'])
 def create(token_id):
     token_id = int(token_id)
     base = BASES[token_id % len(BASES)]
