@@ -47,7 +47,7 @@ def create(token_id):
         if attribute['trait_type'] == 'promotion_ends':
             end_dt = datetime.fromtimestamp(attribute['value'])
             end_time = end_dt.strftime("%Y/%m/%d")
-        if start != "" and end_time != "":
+        if start_time != "" and end_time != "":
             break
     _upload_image(['images/bases/base-{}.png'.format(base),
                     'images/blocklytics-cool.png'],
